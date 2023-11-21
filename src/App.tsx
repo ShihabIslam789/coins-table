@@ -1,5 +1,6 @@
 import { useState } from "react"
-import AmountInput from "./assets/AmountInput"
+import AmountInput from "./AmountInput"
+import ResultRow from "./ResultRow"
 
 function App() {
     const [amount,setAmount] = useState('')
@@ -14,6 +15,9 @@ function App() {
           value = {amount} 
           onChange={e => setAmount(e.target.value)}
           />
+      </div>
+      <div className="mt-6">
+        <ResultRow />
       </div>
     </main>
      
