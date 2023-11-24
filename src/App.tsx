@@ -1,12 +1,18 @@
 import { useState } from "react";
 import AmountInput from "./AmountInput";
 import ResultRow from "./ResultRow";
-import {sortBy} from 'lodash';
+import {sortBy} from  'lodash';
+import  useDebouncedEffect  from  'use-debounced-effect';
+
 
 type CachedResult = {
   provider:string;
   btc:string;
 }
+
+type OfferResults = {[keys: string]:string};
+const defaultAmount = '100';
+
 
 function App() {
   const [prevAmount,setPrevAmount] = useState(defaultAmount);
@@ -22,8 +28,32 @@ function App() {
       });
   }, []);
 
-  const sortedCache = sortBy(cachedResults, 'btc').reverse();
+  useDebouncedEffect(() => {
+    if (amount === defaultAmount) {
+      return;
+    }
+    if (amount !== prevAmount) {
+      setLoading(true);
+      axios
+        .get(`https://rds54favbg.us.aircode.run/offers?amount=${amount}`)
+        .then(res => {
+          setLoading(false);
+          setOfferResults(res.data);
+          setPrevAmount(amount);
+        })
+    }
+  }, 300, [amount]);
 
+  const sortedCache = sortBy(cachedResults, 'btc').reverse();
+  const sortedResults:CachedResult[] = sortBy(Object.keys(offerResults).map(provider => ({
+    provider,
+    btc:offerResults[provider]
+})), 'btc').reverse();
+
+  const showCached = amount === defaultAmount;
+
+  const rows = showCached ? sortedCache : sortedResults;
+  
   return (
     <main className="max-w-2xl mx-auto px-4 py-8">
       <h1 className="uppercase text-6xl text-center font-bold
@@ -44,7 +74,7 @@ function App() {
         <ResultRow loading={true}   />
         </>
         )}
-        {!loading && sortedCache.map((result:CachedResult) =>  (
+        {!loading && showCached && sortedCache.map((result:CachedResult) =>  (
             <ResultRow 
             providerName={result.provider} 
             btc = {result.btc}
