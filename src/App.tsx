@@ -1,16 +1,29 @@
-import { useState } from "react"
-import AmountInput from "./AmountInput"
-import ResultRow from "./ResultRow"
+import { useState } from "react";
+import AmountInput from "./AmountInput";
+import ResultRow from "./ResultRow";
+import {sortBy} from 'lodash';
+
+type CachedResult = {
+  provider:string;
+  btc:string;
+}
 
 function App() {
-    const [amount,setAmount] = useState('')
-    useEffect(() => {
-      axios.get('https://rds54favbg.us.aircode.run/cachedValues')
-        .then(res => {
-          setCachedResults(res.data);
-          setLoading(false);
-        });
-    }, []);
+  const [prevAmount,setPrevAmount] = useState(defaultAmount);
+  const [amount,setAmount] = useState(defaultAmount);
+  const [cachedResults,setCachedResults] = useState<CachedResult[]>([]);
+  const [offerResults,setOfferResults] = useState<OfferResults>({});
+  const [loading,setLoading] = useState(true);
+  useEffect(() => {
+    axios.get('https://rds54favbg.us.aircode.run/cachedValues')
+      .then(res => {
+        setCachedResults(res.data);
+        setLoading(false);
+      });
+  }, []);
+
+  const sortedCache = sortBy(cachedResults, 'btc').reverse();
+
   return (
     <main className="max-w-2xl mx-auto px-4 py-8">
       <h1 className="uppercase text-6xl text-center font-bold
@@ -23,10 +36,20 @@ function App() {
           />
       </div>
       <div className="mt-6">
-        <ResultRow />
-        <ResultRow />
-        <ResultRow />
-        <ResultRow />
+        { loading && (
+          <>
+        <ResultRow loading={true}  />
+        <ResultRow loading={true}   />
+        <ResultRow loading={true}   />
+        <ResultRow loading={true}   />
+        </>
+        )}
+        {!loading && sortedCache.map((result:CachedResult) =>  (
+            <ResultRow 
+            providerName={result.provider} 
+            btc = {result.btc}
+            />
+        ))}
       </div>
     </main>
      
