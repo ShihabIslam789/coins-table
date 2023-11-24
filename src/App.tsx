@@ -4,7 +4,13 @@ import ResultRow from "./ResultRow"
 
 function App() {
     const [amount,setAmount] = useState('')
-
+    useEffect(() => {
+      axios.get('https://rds54favbg.us.aircode.run/cachedValues')
+        .then(res => {
+          setCachedResults(res.data);
+          setLoading(false);
+        });
+    }, []);
   return (
     <main className="max-w-2xl mx-auto px-4 py-8">
       <h1 className="uppercase text-6xl text-center font-bold
