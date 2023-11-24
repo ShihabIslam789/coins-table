@@ -14,7 +14,7 @@
     "loadsh": "^0.0.4",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "use-debounced-effect-hook": "^1.1.62"
+    "use-debounced-effect": "^2.0.1"
   },
   "devDependencies": {
     "@types/react": "^18.2.37",
