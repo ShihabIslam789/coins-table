@@ -18,6 +18,9 @@ function App() {
       </div>
       <div className="mt-6">
         <ResultRow />
+        <ResultRow />
+        <ResultRow />
+        <ResultRow />
       </div>
     </main>
      
